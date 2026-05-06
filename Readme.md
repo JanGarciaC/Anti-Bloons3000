@@ -1,1 +1,1 @@
-Projecte de l'asignatura de robotica
+Projecte de l'asignatura de robòtica
