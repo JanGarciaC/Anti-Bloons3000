@@ -34,7 +34,7 @@ Els components de l'Anti-Bloons son "prou simples", utilitzant una Raspberry Pi 
 
 ### Esquema del cablejat
 L'esquema del cablejat que es mostra a continuació s'ha creat utilitzant el Cirkit Designer IDE
-<div align="center"><img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Hardware/Esquemes/circuit.jpeg" width="800"> </div> <br>
+<div align="center"><img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Hardware/Esquemes/circuit.png" width="800"> </div> <br>
 
 ## Arquitectura del Software
 <div align="center"><img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Software/arquitecturasoftware.jpeg" width="800"> </div> <br>
