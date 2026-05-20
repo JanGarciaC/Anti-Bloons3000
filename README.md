@@ -31,7 +31,7 @@ Els components de l'Anti-Bloons son "prou simples", utilitzant una Raspberry Pi 
 | <img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Hardware/Components/Imatges/rplidar-c1-ip54.jpg" width="75"> | [RPLIDAR-C1 360 grados 12 metros (IP54)](https://tienda.bricogeek.com/sensores-distancia/1943-rplidar-c1-360-grados-12-metros-ip54.html) | 1 |
 | <img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Hardware/Components/Imatges/motor30-1.jpg" width="75"> | [Motor micro metal 30:1 HP con eje extendido](https://tienda.bricogeek.com/motores-dc/1007-motor-micro-metal-30-1-hp-con-eje-extendido.html) | 1 |
 | <img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Hardware/Components/Imatges/ruedaloca.jpg" width="75"> | [Rueda loca mecànica](https://tienda.bricogeek.com/robotica/995-rueda-loca-plastico-abs-34.html) | 1 |
-| <img src="https://tienda.bricogeek.com/933-large_default/pareja-de-ruedas-80x10mm-blanco.jpg" width="75"> | [Pareja de ruedas 80x10mm] (https://tienda.bricogeek.com/robotica/303-pareja-de-ruedas-80x10mm-blanco.html) | 1 |
+| <img src="https://tienda.bricogeek.com/933-large_default/pareja-de-ruedas-80x10mm-blanco.jpg" width="75"> | [Pareja de ruedas 80x10mm](https://tienda.bricogeek.com/robotica/303-pareja-de-ruedas-80x10mm-blanco.html) | 1 |
 
 ### Esquema del cablejat
 L'esquema del cablejat que es mostra a continuació s'ha creat utilitzant el Cirkit Designer IDE
