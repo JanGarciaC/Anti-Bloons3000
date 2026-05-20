@@ -32,6 +32,10 @@ Els components de l'Anti-Bloons son "prou simples", utilitzant una Raspberry Pi 
 | <img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Hardware/Components/Imatges/motor30-1.jpg" width="75"> | [Motor micro metal 30:1 HP con eje extendido](https://tienda.bricogeek.com/motores-dc/1007-motor-micro-metal-30-1-hp-con-eje-extendido.html) | 1 |
 | <img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Hardware/Components/Imatges/ruedaloca.jpg" width="75"> | [Rueda loca mecànica](https://tienda.bricogeek.com/robotica/995-rueda-loca-plastico-abs-34.html) | 1 |
 | <img src="https://tienda.bricogeek.com/933-large_default/pareja-de-ruedas-80x10mm-blanco.jpg" width="75"> | [Pareja de ruedas 80x10mm](https://tienda.bricogeek.com/robotica/303-pareja-de-ruedas-80x10mm-blanco.html) | 1 |
+| <img src="https://tienda.bricogeek.com/296-large_default/motor-micro-metal-dc-con-reductora-50-1.jpg" width="75"> | [Motor micro metal 50:1](https://tienda.bricogeek.com/motores/115-motor-micro-metal-dc-con-reductora-50-1.html) | 2 |
+| <img src="https://media.adeo.com/mkp/88b3f6d9230d74b8d4e4c229e281ca06/media.jpg?width=650&height=650&format=jpg&quality=80&fit=bounds" width="75"> | [Portapilas para 6 pilas tipo AA](https://www.leroymerlin.es/productos/portapilas-para-6-pilas-tipo-aa-86417903.html) | 1 |
+| <img src="https://imgs.search.brave.com/X1NrYPKFUC1A9rPWImKe9UJp6VhItkMvcqg-BhZR9G4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9hd3Mu/YW1zMy5jZG4uZGln/aXRhbG9jZWFuc3Bh/Y2VzLmNvbS8yMDEv/ZDQvMWQvOGMvNDFp/ZjM4c3JjcGwuanBn" width="75"> | [Poweradd pilot 2gs power bank 10000mah](https://www.cargadoresportatiles.es/version-mejorada-poweradd-pilot-2gs-power-bank-10000mah/) | 1 |
+
 
 ### Esquema del cablejat
 L'esquema del cablejat que es mostra a continuació s'ha creat utilitzant el Cirkit Designer IDE
