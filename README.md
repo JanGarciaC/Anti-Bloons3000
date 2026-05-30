@@ -1,4 +1,10 @@
-# Anti-Bloons 3000
+<h1 align="center">
+  <br>
+    <img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Galeria/bloonstd.svg" alt="Tanc BloonsTD" width="250">
+  <br>
+    Anti-Bloons 3000
+  <br>
+</h1>
 
 L'Anti-Bloons 3000 és un robot que detecta, restreja i elimina globus a distància. Inspirant-nos en la saga de jocs "Bloons TD", volem materialitzar un autòmat capaç de disparar projectils calculant la posició dels objectius (en el nostre cas, globus d'aire).
 
@@ -10,6 +16,28 @@ L'Anti-Bloons 3000 és un robot que detecta, restreja i elimina globus a distàn
 - [Aarón Móstiga Móstiga](https://www.github.com/NNIU1708231) - 3D Parts & Mechanical Lead
 - [Gerard Casanovas Urpí](https://www.github.com/NIU1708307) - Hardware Lead
 - [Lluc Aymerich Medina](https://www.github.com/Insaly) - Testing & Validation Lead
+
+# Com configurar-lo?
+
+### Pas 1: Descarrega el repositori
+Obra una terminal i executa la següent comanda:
+```bash
+git clone https://github.com/JanGarciaC/Anti-Bloons3000.git
+cd Anti-Bloons3000
+```
+
+### Pas 2: Insta·la Python
+Si no tens Python insta·lat, descarrega-te'l des de la [web oficial](https://www.python.org/downloads/)
+Per a assegurar-nos que el software funcioni bé, utilitzarem la versió 3.13. Pots comprovar la teva versió de Python executant:
+```bash
+python --version
+```
+
+### Pas 3: Instal·la les dependències
+Ara que ja tens Python descarregat, pots instal·lar les dependències necessàries simplement executant el fitxer setup.sh
+```bash
+bash setup.sh
+```
 
 # Components
 
