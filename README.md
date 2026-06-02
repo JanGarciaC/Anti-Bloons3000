@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-    <img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Galeria/bloonstd.svg" alt="Tanc BloonsTD" width="250">
+    <img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Galeria/bloonstd.png" alt="Tanc BloonsTD" width="250">
   <br>
     Anti-Bloons 3000
   <br>
@@ -73,3 +73,24 @@ L'esquema del cablejat que es mostra a continuació s'ha creat utilitzant el Cir
 ## Arquitectura del Software
 <div align="center"><img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Software/arquitecturasoftware.jpeg" width="800"> </div> <br>
 
+## Software 
+
+El software de l'Anti-Bloons conta de dues parts principals, una de visió per computador per a detectar globus i una altra que gestiona els pins de l'ordinador per a enfocar el canó cap a ells.
+
+## Detecció de globus
+
+El projecte entrena i executa models YOLO (un sistema basat en xarxes neuronals convolutives) per a detectar objectes. El repositori estès és [aquest](https://github.com/JanGarciaC/PractiquesVC/tree/main/Projecte)
+
+### 1. Detecció
+Per cada frame, YOLO passa la imatge per la xarxa neuronal entrenada i retorna bounding boxes (coordenades x1,y1,x2,y2) dels globus detectats, filtrant per un llindar de confiança i eliminant deteccions solapades amb NMS.
+### 2. Rastreig
+Com que YOLO detecta de nou cada frame sense memòria, el rastrejador assigna IDs persistents als globus entre frames. Ho fa calculant el centroide de cada bounding box i usant distància euclidiana per associar cada detecció nova amb l'objecte més proper del frame anterior.
+### 3. Visualització
+Per cada globus rastrejat, extreu el color dominant del seu interior (en espai HSV, filtrant ombres i blancs) i pinta la bounding box i la ID amb aquell mateix color saturat. A sobre hi afegeix un HUD amb el comptador de globus i els FPS.
+
+![screenshot](https://raw.githubusercontent.com/joanmarc28/Robocat/main/gallery/globus.gif)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/joanmarc28/Robocat/main/gallery/globus.gif" alt="Exemple de detecció de globus" width="600">  
+</p>
+
+## Càlcul de l'angle del canó 
