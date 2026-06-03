@@ -91,7 +91,7 @@ Com que YOLO detecta de nou cada frame sense memòria, el rastrejador assigna ID
 Per cada globus rastrejat, extreu el color dominant del seu interior (en espai HSV, filtrant ombres i blancs) i pinta la bounding box i la ID amb aquell mateix color saturat. A sobre hi afegeix un HUD amb el comptador de globus i els FPS.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/joanmarc28/Robocat/main/Galeria/globus.gif" alt="Exemple de detecció de globus" width="600">  
+  <img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Galeria/globus.gif" alt="Exemple de detecció de globus" width="600">  
 </p>
 
 ## Càlcul de l'angle del canó 
