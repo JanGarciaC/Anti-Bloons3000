@@ -8,7 +8,7 @@
 
 L'Anti-Bloons 3000 és un robot que detecta, restreja i elimina globus a distància. Inspirant-nos en la saga de jocs "Bloons TD", volem materialitzar un autòmat capaç de disparar projectils calculant la posició dels objectius (en el nostre cas, globus d'aire).
 
-![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![Raspberry Pi](https://img.shields.io/badge/-Raspberry_Pi-C51A4A?style=for-the-badge&logo=Raspberry-Pi)
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![Raspberry Pi](https://img.shields.io/badge/-Raspberry_Pi-C51A4A?style=for-the-badge&logo=Raspberry-Pi) ![Fusion 360](https://img.shields.io/badge/Fusion_360-FF6600?style=for-the-badge&logo=autodesk&logoColor=white) ![OpenCV](https://img.shields.io/badge/OpenCV-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white) ![NumPy](https://img.shields.io/badge/NumPy-013243?style=for-the-badge&logo=numpy&logoColor=white) ![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)
 
 ## Autors
 
@@ -38,6 +38,8 @@ Ara que ja tens Python descarregat, pots instal·lar les dependències necessàr
 ```bash
 bash setup.sh
 ```
+
+
 
 # Components
 
@@ -88,9 +90,8 @@ Com que YOLO detecta de nou cada frame sense memòria, el rastrejador assigna ID
 ### 3. Visualització
 Per cada globus rastrejat, extreu el color dominant del seu interior (en espai HSV, filtrant ombres i blancs) i pinta la bounding box i la ID amb aquell mateix color saturat. A sobre hi afegeix un HUD amb el comptador de globus i els FPS.
 
-![screenshot](https://raw.githubusercontent.com/joanmarc28/Robocat/main/gallery/globus.gif)
 <p align="center">
-  <img src="https://raw.githubusercontent.com/joanmarc28/Robocat/main/gallery/globus.gif" alt="Exemple de detecció de globus" width="600">  
+  <img src="https://raw.githubusercontent.com/joanmarc28/Robocat/main/Galeria/globus.gif" alt="Exemple de detecció de globus" width="600">  
 </p>
 
 ## Càlcul de l'angle del canó 
