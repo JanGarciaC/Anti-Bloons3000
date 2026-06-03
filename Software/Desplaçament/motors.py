@@ -1,32 +1,6 @@
 """
 desplacament/motors.py — Control de rodes i màquina d'estats del robot
 =======================================================================
-Responsabilitats:
-  - MotorController: gestiona els dos motors de les rodes via GPIO + PWM
-  - RobotFSM: màquina d'estats finits que coordina els comportaments:
-
-      ┌─────────────┐  globus detectat   ┌─────────────┐
-      │  EXPLORANT  │ ─────────────────► │ APROXIMANT  │
-      │ (avança en  │                    │ (s'acosta   │
-      │  línia recta│ ◄─────────────────  │  al globus) │
-      └─────────────┘  globus perdut     └──────┬──────┘
-                                                │ prou a prop
-                                                ▼
-                                         ┌─────────────┐
-                                         │  APUNTANT   │
-                                         │ (para motors│
-                                         │ i apunta)   │
-                                         └──────┬──────┘
-                                                │ on_target
-                                                ▼
-                                         ┌─────────────┐
-                                         │  DISPARAT   │
-                                         │ (disparo    │
-                                         │ + cooldown) │
-                                         └──────┬──────┘
-                                                │ cooldown acabat
-                                                ▼
-                                         torna a EXPLORANT
 
 Connexions GPIO (L298N o equivalent):
   Motor esquerre: EN=24(PWM), IN1=23, IN2=25

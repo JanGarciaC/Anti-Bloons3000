@@ -245,14 +245,14 @@ class FireController:
         self._last_fire_time = now
 
         if self._dry_run or self._GPIO is None:
-            log.info("🎯 DISPARO SIMULAT")
+            log.info("DISPARO SIMULAT")
             return True
 
         try:
             self._GPIO.output(self._cfg.fire_gpio_pin, self._GPIO.HIGH)
             time.sleep(self._cfg.fire_pulse_ms / 1000.0)
             self._GPIO.output(self._cfg.fire_gpio_pin, self._GPIO.LOW)
-            log.info("🎯 DISPARO")
+            log.info("DISPARO")
             return True
         except Exception as exc:
             log.error(f"Error disparo: {exc}")
