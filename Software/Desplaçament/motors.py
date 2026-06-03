@@ -1,7 +1,6 @@
 """
 desplacament/motors.py — Control de rodes i màquina d'estats del robot
 =======================================================================
-
 Connexions GPIO (L298N o equivalent):
   Motor esquerre: EN=24(PWM), IN1=23, IN2=25
   Motor dret:     EN=10(PWM), IN1=9,  IN2=11

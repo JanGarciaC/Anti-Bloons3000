@@ -6,7 +6,7 @@ per passar informació entre ells sense acoblament fort.
 """
 
 from dataclasses import dataclass, field
-from desplacament.motors import EXPLORANT
+from Desplaçament.motors import EXPLORANT
 
 
 @dataclass

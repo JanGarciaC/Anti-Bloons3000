@@ -1,7 +1,7 @@
 """
 main.py — Robot detector i destructor de globus
 ================================================
-Raspberry Pi 5 + càmera CSI + YOLOv8 + 2 servos + 2 motors + disparador
+Raspberry Pi 4 + càmera CSI + YOLOv8 ONNX + 2 servos + 2 motors + disparador
 
 Arquitectura de mòduls:
   software/
@@ -52,7 +52,7 @@ from estat  import EstatRobot
 # Importa els mòduls amb noms de carpeta amb accents / espais
 import importlib, sys as _sys
 
-_visio      = importlib.import_module("Visio d'elements.detector")
+_visio      = importlib.import_module("Visio.detector")
 _tir        = importlib.import_module("Tir.apuntament")
 _deplac     = importlib.import_module("Desplaçament.motors")
 
@@ -213,7 +213,7 @@ def main():
         CFG.model_path = args.model
 
     print("=" * 60)
-    print("  ROBOT DETECTOR DE GLOBUS — Raspberry Pi 5")
+    print("  ROBOT DETECTOR DE GLOBUS — Raspberry Pi 4")
     print("=" * 60)
     print(f"  Mode servos  : {args.modo}")
     print(f"  Dry-run      : {args.dry_run}")

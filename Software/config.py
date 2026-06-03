@@ -10,8 +10,9 @@ from dataclasses import dataclass
 
 @dataclass
 class Config:
-    # ── Model YOLO ──────────────────────────────────────────────────────────
-    model_path:       str   = ""        # buit = cerca automàtica
+    # ── Model ONNX (YOLOv8 exportat) ────────────────────────────────────────
+    # Exporta amb: yolo export model=best.pt format=onnx imgsz=320 simplify=True
+    model_path:       str   = ""        # buit = cerca automàtica (best.onnx)
     conf_threshold:   float = 0.35
     iou_threshold:    float = 0.45
 
