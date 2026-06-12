@@ -67,7 +67,7 @@ Els components de l'Anti-Bloons son "prou simples", utilitzant una Raspberry Pi 
 | <img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Hardware/Components/Imatges/portapiles.jpg" width="75"> | [Portapiles x6 AA](https://www.leroymerlin.es/productos/portapilas-para-6-pilas-tipo-aa-86417903.html) | 1 |
 | <img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Hardware/Components/Imatges/bateria.jpg" width="75"> | [Bateria portàtil 10000mah](https://www.cargadoresportatiles.es/version-mejorada-poweradd-pilot-2gs-power-bank-10000mah/) | 1 |
 | <img src="https://raw.githubusercontent.com/JanGarciaC/Anti-Bloons3000/main/Hardware/Components/Imatges/servo.jpg" width="75"> | [Servo FEETECH FS5106B](https://tienda.bricogeek.com/motores/251-servo-feetech-fs5106b-6-kgcm.html) | 2 |
-
+| <img src="https://tienda.bricogeek.com/8295-large_default/controlador-pwm-16-canales-i2c-pca9685.jpg" width="75"> | [Controlador de servos PCA9685] (https://tienda.bricogeek.com/controladores-motores/1764-controlador-pwm-16-canales-i2c-pca9685.html) | 1 |
 
 ### Esquema del cablejat
 L'esquema del cablejat que es mostra a continuació s'ha creat utilitzant el Cirkit Designer IDE
