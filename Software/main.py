@@ -1,7 +1,7 @@
 """
 main.py - Robot detector i destructor de globus
 ================================================
-Raspberry Pi 4 + camera CSI + YOLOv8 ONNX + 2 servos + 2 motors + disparador
+Raspberry Pi 4 + camera CSI + YOLOv8 ONNX + servos PCA9685 + motors via transistors
 
 Estructura de moduls:
   software/
@@ -13,14 +13,13 @@ Estructura de moduls:
   - Tir/
       apuntament.py            - PID + servos + disparo
   - Desplacament/
-      motors.py                - motors de rodes + maquina d'estats
+      motors.py                - motors via transistors + maquina d'estats
 
 Execucio:
     python main.py
     python main.py --dry-run
+    python main.py --no-move
     python main.py --preview
-    python main.py --modo gpio
-    python main.py --modo pca9685
     python main.py --conf 0.4
     python main.py --model best.onnx
 """
@@ -47,11 +46,13 @@ _visio  = importlib.import_module("Visio.detector")
 _tir    = importlib.import_module("Tir.apuntament")
 _deplac = importlib.import_module("Desplacament.motors")
 
-Detector         = _visio.Detector
-dibuixar_preview = _visio.dibuixar_preview
-AimController    = _tir.AimController
-MotorController  = _deplac.MotorController
-RobotFSM         = _deplac.RobotFSM
+Detector                    = _visio.Detector
+dibuixar_preview            = _visio.dibuixar_preview
+calcular_offset_horitzontal_px = _visio.calcular_offset_horitzontal_px
+AimController               = _tir.AimController
+MotorController              = _deplac.MotorController
+RobotFSM                     = _deplac.RobotFSM
+EXPLORANT                    = _deplac.EXPLORANT
 
 try:
     import cv2
@@ -61,19 +62,14 @@ except ImportError:
     import cv2
 
 
-def bucle_principal(cfg, modo: str, dry_run: bool, show_preview: bool):
-    print("[Robot] Inicialitzant subsistemes...")
+def bucle_principal(cfg, dry_run: bool, no_move: bool, show_preview: bool):
 
-    print("[Robot] Carregant detector (model ONNX + camera)...")
     detector = Detector(cfg)
 
-    print("[Robot] Inicialitzant motors de rodes...")
-    motors = MotorController(cfg, dry_run=dry_run)
+    motors = MotorController(cfg, dry_run=dry_run, no_move=no_move)
 
-    print("[Robot] Inicialitzant sistema de tir (servos + PID)...")
-    aim = AimController(cfg, motors, modo=modo, dry_run=dry_run)
+    aim = AimController(cfg, motors, modo="pca9685", dry_run=dry_run)
 
-    print("[Robot] Inicialitzant maquina d'estats...")
     fsm   = RobotFSM(cfg, motors)
     state = EstatRobot()
 
@@ -84,7 +80,6 @@ def bucle_principal(cfg, modo: str, dry_run: bool, show_preview: bool):
     t_last    = time.time()
     log_timer = time.time()
 
-    print("[Robot] Tot llest. Iniciant bucle principal. Prem Ctrl+C per aturar.")
     print()
 
     try:
@@ -115,8 +110,15 @@ def bucle_principal(cfg, modo: str, dry_run: bool, show_preview: bool):
                 error_x = cx_obj - cx_f
                 error_y = cy_obj - cy_f
 
-                on_target = (abs(error_x) < cfg.dead_zone_px and
-                             abs(error_y) < cfg.dead_zone_px)
+                # Correccio per l'offset horitzontal entre camera i cano
+                canon_offset_px = calcular_offset_horitzontal_px(area, w, cfg)
+
+                # Punt on apunta realment el cano (centre de la imatge + offset)
+                punt_cano_x = cx_f + canon_offset_px
+                punt_cano_y = cy_f
+
+                # On target si el punt d'apuntament cau dins el bounding box del globus
+                on_target = (x1 <= punt_cano_x <= x2 and y1 <= punt_cano_y <= y2)
 
                 disparo_produit = aim.actualitzar(
                     error_x, error_y,
@@ -124,6 +126,7 @@ def bucle_principal(cfg, modo: str, dry_run: bool, show_preview: bool):
                     area_px   = area,
                     frame_w   = w,
                     frame_h   = h,
+                    canon_offset_px = canon_offset_px,
                 )
 
                 state.on_target  = on_target
@@ -146,56 +149,54 @@ def bucle_principal(cfg, modo: str, dry_run: bool, show_preview: bool):
                 disparo_produit   = disparo_produit,
             )
 
+            # En estat EXPLORANT, el thread propi d'AimController fa el swipe continu
+            if state.fase == EXPLORANT:
+                aim.iniciar_swipe()
+            else:
+                aim.aturar_swipe()
+
+            state.pan_deg  = aim.pan_deg
+            state.tilt_deg = aim.tilt_deg
+
             if show_preview and frame is not None:
                 dibuixar_preview(frame, state, objectiu, cfg)
                 cv2.imshow("Robot Globus", frame)
                 key = cv2.waitKey(1) & 0xFF
                 if key in (ord("q"), 27):
-                    print("[Robot] Sortint per teclat.")
                     break
 
-            if now - log_timer >= 5.0:
-                log_timer = now
-                print(
-                    f"[Robot] FPS={state.fps:.1f} | PAN={state.pan_deg:.1f} graus | "
-                    f"TILT={state.tilt_deg:.1f} graus | "
-                    f"Globus={'SI' if state.target_detected else 'NO'} | "
-                    f"Estat={state.fase}"
-                )
-                log.info(
-                    f"FPS={state.fps:.1f} | PAN={state.pan_deg:.1f} | "
-                    f"TILT={state.tilt_deg:.1f} | "
-                    f"Globus={'SI' if state.target_detected else 'NO'} | "
-                    f"Estat={state.fase}"
-                )
+            print(
+                f"FPS={state.fps:.1f} | PAN={state.pan_deg:.1f} graus | "
+                f"TILT={state.tilt_deg:.1f} graus | "
+                f"Globus={'SI' if state.target_detected else 'NO'} | "
+                f"OnTarget={'SI' if state.on_target else 'NO'} | "
+                f"Estat={state.fase}"
+            )
 
     except KeyboardInterrupt:
-        print("[Robot] Aturat per l'usuari (Ctrl+C).")
         log.info("Aturat per l'usuari.")
 
     finally:
-        print("[Robot] Aturant subsistemes...")
         motors.parar()
         aim.cleanup()
         detector.alliberar()
         motors.cleanup()
         if show_preview:
             cv2.destroyAllWindows()
-        print("[Robot] Robot aturat correctament.")
         log.info("Robot aturat correctament.")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Robot detector de globus")
-    parser.add_argument("--model",   type=str,   default="")
-    parser.add_argument("--conf",    type=float, default=CFG.conf_threshold)
-    parser.add_argument("--modo",    type=str,   default="auto",
-                        choices=["auto", "gpio", "pca9685"])
-    parser.add_argument("--dry-run", action="store_true",
-                        help="No mou cap actuador")
-    parser.add_argument("--preview", action="store_true",
+    parser.add_argument("--model",    type=str,   default="")
+    parser.add_argument("--conf",     type=float, default=CFG.conf_threshold)
+    parser.add_argument("--dry-run",  action="store_true",
+                        help="No mou cap actuador (servos, motors ni disparo)")
+    parser.add_argument("--no-move",  action="store_true",
+                        help="No mou les rodes, pero si els servos i el disparo")
+    parser.add_argument("--preview",  action="store_true",
                         help="Mostra finestra de depuracio")
-    parser.add_argument("--camera",  type=int,   default=0)
+    parser.add_argument("--camera",   type=int,   default=0)
     args = parser.parse_args()
 
     CFG.conf_threshold = args.conf
@@ -206,19 +207,19 @@ def main():
     print("=" * 55)
     print("  ROBOT DETECTOR DE GLOBUS - Raspberry Pi 4")
     print("=" * 55)
-    print(f"  Mode servos  : {args.modo}")
     print(f"  Dry-run      : {args.dry_run}")
+    print(f"  No-move      : {args.no_move}")
     print(f"  Preview      : {args.preview}")
     print(f"  Confianca    : {CFG.conf_threshold}")
     print(f"  PAN rang     : [{CFG.pan_min_deg} graus, {CFG.pan_max_deg} graus]")
     print(f"  TILT rang    : [{CFG.tilt_min_deg} graus, {CFG.tilt_max_deg} graus]")
-    print(f"  Vel. crucero : {CFG.velocitat_avancar}%")
-    print(f"  Vel. apropar : {CFG.velocitat_apropar}%")
+    print(f"  Offset cam-cano horitz. : {CFG.camera_offset_horitzontal_cm} cm")
+    print(f"  Vel. servo max : {CFG.servo_vel_max_deg} graus/frame")
     print(f"  Area a prop  : {CFG.area_prou_a_prop:.0f} px quadrats")
     print("=" * 55)
     print()
 
-    bucle_principal(CFG, args.modo, args.dry_run, args.preview)
+    bucle_principal(CFG, args.dry_run, args.no_move, args.preview)
 
 
 if __name__ == "__main__":

@@ -52,7 +52,6 @@ def trobar_model(model_path: str) -> Path:
     ]
     for c in candidates:
         if c.exists():
-            print(f"[Detector] Model trobat: {c}")
             log.info(f"Model trobat: {c}")
             return c
     print("[Detector] ERROR: No s'ha trobat cap model .onnx.")
@@ -72,7 +71,6 @@ def obrir_camera(cfg):
     """
 
     w, h, fps = cfg.frame_width, cfg.frame_height, cfg.fps_target
-    print(f"[Camera] Intentant obrir camera ({w}x{h} a {fps} fps)...")
 
     # 1. picamera2
     try:
@@ -132,11 +130,9 @@ def obrir_camera(cfg):
 
         cap = _Picamera2Cap()
         if cap.isOpened():
-            print("[Camera] Camera oberta via picamera2 (CSI natiu)")
             log.info("Camera oberta via picamera2 (CSI natiu)")
             return cap
     except Exception as exc:
-        print(f"[Camera] picamera2 no disponible: {exc}")
         log.debug(f"picamera2 no disponible: {exc}")
 
     # 2-5. OpenCV VideoCapture
@@ -162,11 +158,9 @@ def obrir_camera(cfg):
 
     for src, backend, etiqueta in pipelines:
         try:
-            print(f"[Camera] Provant: {etiqueta}...")
             cap = cv2.VideoCapture(src, backend)
             if not cap.isOpened():
                 cap.release()
-                print(f"[Camera] {etiqueta}: no s'ha pogut obrir")
                 log.debug(f"[{etiqueta}] no s'ha pogut obrir")
                 continue
             cap.set(cv2.CAP_PROP_FRAME_WIDTH,  w)
@@ -174,14 +168,11 @@ def obrir_camera(cfg):
             cap.set(cv2.CAP_PROP_FPS,          fps)
             ret, frame = cap.read()
             if ret and frame is not None and frame.size > 0:
-                print(f"[Camera] Camera oberta correctament: {etiqueta}")
                 log.info(f"Camera oberta: {etiqueta}")
                 return cap
             cap.release()
-            print(f"[Camera] {etiqueta}: obert pero sense frame valid")
             log.debug(f"[{etiqueta}] obert pero sense frame valid")
         except Exception as exc:
-            print(f"[Camera] {etiqueta}: excepcio: {exc}")
             log.debug(f"[{etiqueta}] excepcio: {exc}")
 
     _diagnosticar_camera()
@@ -320,13 +311,25 @@ def seleccionar_objectiu(deteccions: list) -> Objectiu:
     return millor
 
 
-def calcular_offset_tilt(area_px: float, frame_w: int, frame_h: int, cfg) -> float:
+def calcular_offset_horitzontal_px(area_px: float, frame_w: int, cfg) -> float:
+    """
+    Calcula la correccio horitzontal en pixels per compensar que el cano
+    esta desplacat lateralment respecte la camera (camera_offset_horitzontal_cm).
+
+    Com mes a prop esta el globus, mes gran es l'angle de paral·laxi i per
+    tant mes gran la correccio en pixels.
+
+    Si la camera esta a la dreta del cano, el cano apunta a l'esquerra
+    del que veu la camera; per tant cal desplacar l'objectiu cap a la
+    dreta (offset positiu) perque el cano hi apunti correctament.
+    """
     if area_px <= 0:
-        return cfg.tilt_canon_offset_deg
+        return 0.0
     radi_px  = math.sqrt(area_px / math.pi)
     focal_px = (frame_w / 2.0) / math.tan(math.radians(62.0) / 2.0)
-    dist_m   = max(0.5, (0.125 * focal_px) / max(radi_px, 1.0))
-    return math.degrees(math.atan(cfg.canon_offset_cm / 100.0 / dist_m))
+    dist_m   = max(0.3, (0.125 * focal_px) / max(radi_px, 1.0))
+    angle_rad = math.atan((cfg.camera_offset_horitzontal_cm / 100.0) / dist_m)
+    return focal_px * math.tan(angle_rad)
 
 
 def dibuixar_preview(frame, state, objectiu: Objectiu, cfg) -> np.ndarray:
@@ -374,11 +377,15 @@ class Detector:
     def __init__(self, cfg):
         self._cfg = cfg
 
-        print("[Detector] Carregant model ONNX...")
+        # Evita que OpenCV creii threads propis que competeixin amb ONNX Runtime
+        cv2.setNumThreads(1)
+
         model_path = trobar_model(cfg.model_path)
         sess_opts  = ort.SessionOptions()
         sess_opts.intra_op_num_threads = 4
+        sess_opts.inter_op_num_threads = 1
         sess_opts.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
+        sess_opts.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
         self._sess = ort.InferenceSession(
             str(model_path),
             sess_options=sess_opts,
@@ -388,7 +395,6 @@ class Detector:
         self._input_name = inp.name
         _, _, self._input_h, self._input_w = inp.shape
         self._input_size = (self._input_h, self._input_w)
-        print(f"[Detector] Model carregat: {model_path.name} | entrada: {self._input_w}x{self._input_h}")
         log.info(f"Model ONNX: {model_path.name} | entrada: {self._input_w}x{self._input_h}")
 
         self._cap = obrir_camera(cfg)
@@ -396,14 +402,25 @@ class Detector:
         self.h  = int(self._cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.cx = self.w // 2
         self.cy = self.h // 2
-        print(f"[Detector] Resolucio: {self.w}x{self.h} | Centre: ({self.cx},{self.cy})")
         log.info(f"Resolucio: {self.w}x{self.h} | Centre: ({self.cx},{self.cy})")
+
+        # Per al skip de frames: manté l'ultima deteccio entre inferencies
+        self._frame_count    = 0
+        self._ultim_objectiu = None
 
     def llegir_frame(self) -> Tuple[Optional[np.ndarray], Objectiu]:
         ret, frame = self._cap.read()
         if not ret or frame is None:
             log.warning("Frame perdut.")
             return None, None
+
+        self._frame_count += 1
+        n = max(1, self._cfg.inferencia_cada_n_frames)
+
+        # Nomes fa inferencia cada N frames; els altres frames reutilitzen
+        # l'ultima deteccio per mantenir el bucle (i els servos) rapids.
+        if self._frame_count % n != 0:
+            return frame, self._ultim_objectiu
 
         tensor, scale, pad_top, pad_left = _preprocessar(frame, self._input_size)
         output = self._sess.run(None, {self._input_name: tensor})
@@ -413,11 +430,11 @@ class Detector:
             self.w, self.h,
         )
         objectiu = seleccionar_objectiu(deteccions)
+        self._ultim_objectiu = objectiu
         return frame, objectiu
 
     def alliberar(self):
         if self._cap:
             self._cap.release()
         cv2.destroyAllWindows()
-        print("[Detector] Camera alliberada.")
         log.info("Camera alliberada.")
